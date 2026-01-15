@@ -36,6 +36,8 @@ class AuthController extends Controller
             return back()->withErrors(['login_error' => 'username/password incorrect'])->withInput();
         }
 
+        // Auth::attempt secara otomatis akan mencocokkan input 'password' 
+        // dengan kolom 'hashed_password' karena sudah kita atur di Model User.
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $request->session()->regenerate();
             return redirect()->intended('dashboard');
@@ -50,11 +52,10 @@ class AuthController extends Controller
     }
 
     public function register(Request $request) {
-        // Validasi Domain
         if (str_contains($request->email, '@ganteng.com')) {
             return back()->withErrors(['email' => 'Domain ini tidak diizinkan'])->withInput();
         }
-        // Validasi Panjang Password
+
         if (strlen($request->password) <= 8) {
              return back()->withErrors(['password' => 'Password harus lebih dari 8 karakter'])->withInput();
         }
@@ -69,6 +70,7 @@ class AuthController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        // Menggunakan kolom hashed_password sesuai struktur database
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -90,13 +92,12 @@ class AuthController extends Controller
         return redirect('/login');
     }
 
-    // --- FORGOT PASSWORD ---
+    // --- FORGOT PASSWORD & OTP GENERATION ---
     public function showForgotPasswordForm() {
         return view('auth.forgot-password');
     }
 
     public function sendResetLink(Request $request) {
-        // Validasi Sesuai S&K
         $request->validate([
             'email' => 'required|email|exists:users,email'
         ], [
@@ -105,29 +106,49 @@ class AuthController extends Controller
             'email.exists' => 'Email Anda Salah'    
         ]);
 
-        // 1. Cari user
         $user = User::where('email', $request->email)->first();
 
-        // 2. Buat Password Baru 
-        // --- PERBAIKAN DI SINI ---
-        // Kita ubah jadi 10 karakter agar lolos validasi Login (harus > 8)
+        // 1. Buat Password Baru (> 8 karakter)
         $new_password = Str::random(10); 
-        // -------------------------
 
-        // 3. Simpan password baru ke database (di-hash)
-        $user->password = Hash::make($new_password);
+        // 2. Buat Kode OTP (6 Digit) untuk kolom otp_code
+        $otp = rand(100000, 999999);
+
+        // 3. Simpan ke database menggunakan nama kolom yang benar
+        // Perbaikan: Menggunakan hashed_password agar tidak error "Column not found"
+        $user->hashed_password = Hash::make($new_password);
+        $user->otp_code = $otp; 
         $user->save();
 
-        // 4. Kirim Email berisi password mentah (Simulasi SMTP)
+        // 4. Kirim Email (Simulasi OTP & Password Baru)
         try {
-            Mail::raw("Halo $user->name, \n\nPermintaan reset password diterima.\nPassword/OTP baru Anda adalah: $new_password \n\nSilakan login dengan password ini.", function ($message) use ($user) {
+            Mail::raw("Halo $user->name, \n\nPermintaan reset password diterima.\nOTP Verifikasi Anda adalah: $otp \nPassword Baru Anda adalah: $new_password \n\nSilakan verifikasi OTP terlebih dahulu sebelum login.", function ($message) use ($user) {
                 $message->to($user->email);
-                $message->subject('Password Baru & OTP');
+                $message->subject('Kode OTP & Password Baru');
             });
 
-            return back()->with('status', 'Password baru telah dikirim ke email Anda!');
+            // Alihkan ke halaman verifikasi OTP
+            return redirect()->route('otp.view')->with('status', 'Kode OTP telah dikirim ke email Anda!');
         } catch (\Exception $e) {
             return back()->withErrors(['email' => 'Gagal mengirim email (Cek koneksi SMTP).']);
         }
+    }
+
+    // --- FUNGSI BARU: VERIFIKASI OTP ---
+    public function verifyOtp(Request $request) {
+        $request->validate(['otp_code' => 'required|digits:6']);
+
+        // Mencari user berdasarkan otp_code di database
+        $user = User::where('otp_code', $request->otp_code)->first();
+
+        if ($user) {
+            // Berhasil: Kosongkan OTP agar tidak bisa dipakai ulang
+            $user->otp_code = null;
+            $user->save();
+            
+            return redirect()->route('login')->with('success', 'OTP Valid! Silakan login dengan password baru Anda.');
+        }
+
+        return back()->withErrors(['otp_error' => 'Kode OTP salah atau sudah kadaluwarsa!']);
     }
 }

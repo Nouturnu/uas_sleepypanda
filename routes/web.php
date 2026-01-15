@@ -15,9 +15,15 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
-// Jalur Lupa Password
+// --- JALUR LUPA PASSWORD & OTP ---
 Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+
+// Tambahkan Route untuk Verifikasi OTP di sini
+Route::get('/verify-otp', function () {
+    return view('auth.verify-otp');
+})->name('otp.view');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('otp.verify');
 
 // Jalur Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
