@@ -1,0 +1,143 @@
+/* --- PENGATURAN GLOBAL & DASAR --- */
+/* Ini berlaku untuk seluruh halaman website */
+
+body {
+    /* Ganti 'Arial, sans-serif' dengan nama font dari Marvelapp */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Warna latar belakang dasar */
+}
+
+.container {
+    width: 85%; /* Membatasi lebar konten agar tidak terlalu lebar di layar besar */
+    margin: 0 auto; /* Membuat container berada di tengah halaman */
+}
+
+
+/* --- HEADER --- */
+/* Bagian ini menata semua yang ada di dalam <header> */
+
+header {
+    /* Ganti kode warna #4a0e4e dan #0d82c5 dengan yang ada di Marvelapp */
+    background: linear-gradient(to right, #4a0e4e, #0d82c5);
+    padding: 15px 0;
+    color: white;
+}
+
+.header-container {
+    display: flex; /* Membuat semua elemen di header (logo, nav, search) sejajar */
+    justify-content: space-between; /* Memberi jarak maksimal antar elemen */
+    align-items: center; /* Membuat elemen rata tengah secara vertikal */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.logo img {
+    height: 40px; /* Atur ukuran tinggi logo */
+    margin-right: 10px;
+}
+
+nav ul {
+    list-style: none; /* Menghilangkan titik pada list menu */
+    margin: 0;
+    padding: 0;
+    display: flex; /* Membuat item menu sejajar */
+}
+
+nav ul li {
+    margin: 0 15px; /* Memberi jarak antar item menu */
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input {
+    border: 1px solid white;
+    background: transparent;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px; /* Membuat sudutnya melengkung */
+}
+
+.search-bar input::placeholder {
+    color: #e0e0e0; /* Warna untuk teks placeholder */
+}
+
+.btn.btn-primary {
+    /* Ganti kode warna #007bff dengan yang ada di Marvelapp */
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+
+/* --- HERO SECTION (GAMBAR GEDUNG) --- */
+/* Bagian ini menata section pertama di halaman home */
+
+.hero-section {
+    height: 650px; /* Atur tinggi section sesuai desain */
+    /* Ganti 'gambar-gedung.jpg' dengan nama file gambar dari Marvelapp */
+    background-image: url('../images/gambar-gedung.jpg');
+    background-size: cover; /* Membuat gambar menutupi seluruh area section */
+    background-position: center; /* Posisi gambar selalu di tengah */
+    display: flex;
+    align-items: center; /* Membuat konten di dalamnya rata tengah vertikal */
+}
+
+.hero-content {
+    /* Ganti kode warna rgba(...) dengan yang ada di Marvelapp */
+    background-color: rgba(63, 81, 181, 0.8); /* Warna biru transparan */
+    padding: 30px 40px;
+    color: white;
+    max-width: 500px; /* Batasi lebar kotak teks */
+}
+
+.hero-content h1 {
+    font-size: 36px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    line-height: 1.2; /* Jarak antar baris judul */
+}
+
+.btn.btn-secondary {
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block; /* Agar bisa diberi padding */
+}
+
+
+/* --- FOOTER --- */
+/* Bagian ini menata semua yang ada di dalam <footer> */
+
+footer {
+    /* Gradien yang sama dengan header */
+    background: linear-gradient(to right, #4a0e4e, #0d82c5);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 14px;
+}
